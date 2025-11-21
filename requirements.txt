@@ -17,7 +17,7 @@ python-dateutil
 
 langchain
 langchain-core
-langchain-groq
+langchain-groq==0.1.4
 
 
 
