@@ -2,6 +2,7 @@ import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { colors } from '../config/colors';
 import { useDashboardStats } from '../hooks/useDashboardStats';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export const HomePage: React.FC = () => {
   const { stats: dashboardData, loading, error } = useDashboardStats();
@@ -64,13 +65,7 @@ export const HomePage: React.FC = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Loading State */}
-        {loading && (
-          <div style={{ backgroundColor: colors.primary.subtle, borderLeft: `4px solid ${colors.primary.default}` }} className="rounded-lg p-6 text-center">
-            <p style={{ color: colors.primary.default, fontFamily: 'Montserrat', fontWeight: 600 }} className="text-lg">
-              Loading dashboard data...
-            </p>
-          </div>
-        )}
+        {loading && <LoadingSpinner variant="fixed" />}
 
         {/* Error State */}
         {error && (
