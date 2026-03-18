@@ -2,8 +2,9 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /frontend
 
-COPY frontend/package.json ./
-RUN npm install
+COPY frontend/package*.json ./
+RUN npm ci --prefer-offline --no-audit && \
+    chmod +x node_modules/.bin/*
 
 COPY frontend/ ./
 RUN npm run build
