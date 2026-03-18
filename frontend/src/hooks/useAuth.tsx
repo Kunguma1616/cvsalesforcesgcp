@@ -40,8 +40,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const verifySession = async (sessionId: string, email: string, name: string | null) => {
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/auth/verify/${sessionId}`);
       
+=======
+      const response = await fetch(`${API_URL}/api/auth/verify/${sessionId}`);
+
+>>>>>>> e9d015a338ed4cb2ae367f93852313e72809a8da
       if (response.ok) {
         setSessionId(sessionId);
         setUser({
@@ -75,7 +80,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     const storedSessionId = localStorage.getItem('session_id');
-    
+
     if (storedSessionId) {
       try {
         await fetch(`/api/auth/logout/${storedSessionId}`, {
@@ -84,7 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch (error) {
         console.error('Failed to logout:', error);
       }
-      
+
       localStorage.removeItem('session_id');
       localStorage.removeItem('user_email');
       localStorage.removeItem('user_name');
