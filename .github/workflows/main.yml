@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -51,10 +51,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -77,10 +77,10 @@ jobs:
     needs: [build-backend, build-frontend]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -108,7 +108,7 @@ jobs:
           MICROSOFT_CLIENT_SECRET: "test-secret"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -128,10 +128,10 @@ jobs:
     needs: testing
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -163,24 +163,15 @@ jobs:
     needs: [code-quality]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Build Docker image (Backend)
+      - name: Build Docker image
         run: |
-          if [ -f backend/Dockerfile ]; then
-            docker build -t cv-analysis-backend:latest ./backend
-            echo "Backend Docker image built successfully"
+          if [ -f Dockerfile ]; then
+            docker build -t cv-analysis-backend:latest .
+            echo "Docker image built successfully"
           else
-            echo "Backend Dockerfile not found, skipping"
-          fi
-
-      - name: Build Docker image (Frontend)
-        run: |
-          if [ -f frontend/Dockerfile ]; then
-            docker build -t cv-analysis-frontend:latest ./frontend
-            echo "Frontend Docker image built successfully"
-          else
-            echo "Frontend Dockerfile not found, skipping"
+            echo "Dockerfile not found, skipping"
           fi
 
   # ========= DEPLOY STAGING ==========
@@ -190,7 +181,7 @@ jobs:
     if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
@@ -206,25 +197,16 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev || true
         continue-on-error: true
 
-      - name: Build & Push Backend (Staging)
+      - name: Build & Push to Staging
         run: |
-          if [ -f backend/Dockerfile ]; then
+          if [ -f Dockerfile ]; then
             IMAGE=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-staging/backend:latest
-            docker build -t $IMAGE ./backend
+            docker build -t $IMAGE .
             docker push $IMAGE || echo "Docker push failed, continuing..."
           fi
         continue-on-error: true
 
-      - name: Build & Push Frontend (Staging)
-        run: |
-          if [ -f frontend/Dockerfile ]; then
-            IMAGE=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-staging/frontend:latest
-            docker build -t $IMAGE ./frontend
-            docker push $IMAGE || echo "Docker push failed, continuing..."
-          fi
-        continue-on-error: true
-
-      - name: Deploy Backend to Cloud Run (Staging)
+      - name: Deploy to Cloud Run (Staging)
         run: |
           gcloud run deploy cv-analysis-backend-staging \
             --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-staging/backend:latest \
@@ -234,15 +216,6 @@ jobs:
             --set-env-vars "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }},SF_USERNAME=${{ secrets.SF_USERNAME }},SF_PASSWORD=${{ secrets.SF_PASSWORD }},SF_SECURITY_TOKEN=${{ secrets.SF_SECURITY_TOKEN }},SF_DOMAIN=test" || true
         continue-on-error: true
 
-      - name: Deploy Frontend to Cloud Run (Staging)
-        run: |
-          gcloud run deploy cv-analysis-frontend-staging \
-            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-staging/frontend:latest \
-            --platform managed \
-            --region us-central1 \
-            --allow-unauthenticated || true
-        continue-on-error: true
-
   # ========= DEPLOY PRODUCTION ==========
   deploy-production:
     runs-on: ubuntu-latest
@@ -250,7 +223,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v1
@@ -266,25 +239,16 @@ jobs:
         run: gcloud auth configure-docker us-central1-docker.pkg.dev || true
         continue-on-error: true
 
-      - name: Build & Push Backend (Production)
+      - name: Build & Push to Production
         run: |
-          if [ -f backend/Dockerfile ]; then
+          if [ -f Dockerfile ]; then
             IMAGE=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-production/backend:latest
-            docker build -t $IMAGE ./backend
+            docker build -t $IMAGE .
             docker push $IMAGE || echo "Docker push failed, continuing..."
           fi
         continue-on-error: true
 
-      - name: Build & Push Frontend (Production)
-        run: |
-          if [ -f frontend/Dockerfile ]; then
-            IMAGE=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-production/frontend:latest
-            docker build -t $IMAGE ./frontend
-            docker push $IMAGE || echo "Docker push failed, continuing..."
-          fi
-        continue-on-error: true
-
-      - name: Deploy Backend to Cloud Run (Production)
+      - name: Deploy to Cloud Run (Production)
         run: |
           gcloud run deploy cv-analysis-backend \
             --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-production/backend:latest \
@@ -294,15 +258,6 @@ jobs:
             --set-env-vars "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }},SF_USERNAME=${{ secrets.SF_USERNAME }},SF_PASSWORD=${{ secrets.SF_PASSWORD }},SF_SECURITY_TOKEN=${{ secrets.SF_SECURITY_TOKEN }},SF_DOMAIN=login" || true
         continue-on-error: true
 
-      - name: Deploy Frontend to Cloud Run (Production)
-        run: |
-          gcloud run deploy cv-analysis-frontend \
-            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cv-analysis-production/frontend:latest \
-            --platform managed \
-            --region us-central1 \
-            --allow-unauthenticated || true
-        continue-on-error: true
-
   # ========= NOTIFICATION ==========
   notification:
     runs-on: ubuntu-latest
@@ -310,7 +265,7 @@ jobs:
     if: always()
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Pipeline Summary
         run: |
