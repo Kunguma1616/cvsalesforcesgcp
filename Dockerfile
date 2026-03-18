@@ -6,6 +6,7 @@ COPY frontend/package.json ./
 RUN npm install
 
 COPY frontend/ ./
+RUN chmod -R +x node_modules/.bin/
 RUN npm run build
 
 # Stage 2: Python backend
@@ -32,5 +33,4 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-# ✅ Fixed: "main:app" not "app:app"
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080} --timeout-keep-alive 75"]
