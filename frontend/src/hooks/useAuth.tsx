@@ -16,7 +16,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// ✅ FIXED: fallback is now the production URL, not localhost
+const API_URL = import.meta.env.VITE_API_URL || 'https://cv-parser-service-726237234326.europe-west2.run.app';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,7 +42,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const verifySession = async (sessionId: string, email: string, name: string | null) => {
     try {
       const response = await fetch(`${API_URL}/api/auth/verify/${sessionId}`);
-      
+
       if (response.ok) {
         setSessionId(sessionId);
         setUser({
@@ -75,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     const storedSessionId = localStorage.getItem('session_id');
-    
+
     if (storedSessionId) {
       try {
         await fetch(`${API_URL}/api/auth/logout/${storedSessionId}`, {
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch (error) {
         console.error('Failed to logout:', error);
       }
-      
+
       localStorage.removeItem('session_id');
       localStorage.removeItem('user_email');
       localStorage.removeItem('user_name');
