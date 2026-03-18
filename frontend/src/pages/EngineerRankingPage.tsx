@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Search, Trophy, Users, AlertCircle, ChevronUp, ChevronDown, Droplets, Zap } from 'lucide-react';
 import { colors } from '../config/colors';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 interface Engineer {
   rank: number;
@@ -81,7 +81,7 @@ export const EngineerRankingPage: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get(`${API_BASE}/api/ranking/trade-groups`)
+      .get(`/api/ranking/trade-groups`)
       .then((res) => setTradeGroups(res.data.trade_groups || []))
       .catch(() => setTradeGroups([]));
   }, []);
@@ -92,7 +92,7 @@ export const EngineerRankingPage: React.FC = () => {
     const params: Record<string, string> = {};
     if (tradeFilter !== 'all') params.trade_group = tradeFilter;
     axios
-      .get(`${API_BASE}/api/ranking/engineers`, { params })
+      .get(`/api/ranking/engineers`, { params })
       .then((res) => setEngineers(res.data.engineers || []))
       .catch((err) => setError(err.response?.data?.detail || 'Failed to load engineer rankings.'))
       .finally(() => setLoading(false));

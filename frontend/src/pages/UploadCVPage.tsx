@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Upload, FileText, User, Mail, Briefcase, AlignLeft, AlertCircle } from 'lucide-react';
 import { colors } from '../config/colors';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const TRADES = [
   'Access',
   'Brickwork & Paving',
@@ -96,7 +96,7 @@ const UploadCVPage: React.FC = () => {
     data.append('resume', file);
 
     try {
-      const res = await axios.post(`${API_URL}/cv/upload-and-analyze`, data, {
+      const res = await axios.post(`/cv/upload-and-analyze`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       navigate('/analysis-result', { state: { result: res.data } });

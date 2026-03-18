@@ -13,7 +13,7 @@ export interface DashboardStats {
   dry_trade_breakdown: TradeBreakdown[];
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export const useDashboardStats = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -25,7 +25,7 @@ export const useDashboardStats = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${API_BASE_URL}/api/dashboad/stats`);
+        const response = await fetch(`/api/dashboad/stats`);
         
         if (!response.ok) {
           throw new Error(`API Error: ${response.status}`);

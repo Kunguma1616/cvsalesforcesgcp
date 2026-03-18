@@ -16,7 +16,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const verifySession = async (sessionId: string, email: string, name: string | null) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/verify/${sessionId}`);
+      const response = await fetch(`/api/auth/verify/${sessionId}`);
       
       if (response.ok) {
         setSessionId(sessionId);
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     if (storedSessionId) {
       try {
-        await fetch(`${API_URL}/api/auth/logout/${storedSessionId}`, {
+        await fetch(`/api/auth/logout/${storedSessionId}`, {
           method: 'POST'
         });
       } catch (error) {
