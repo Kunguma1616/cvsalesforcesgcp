@@ -169,7 +169,7 @@ export const EngineerRankingPage: React.FC = () => {
       {/* Heading */}
       <div>
         <h2 className="text-2xl font-bold" style={{ color: colors.brand.blue }}>
-          Chumely Engineer Application AI Ranking
+          Chumley Engineer Application AI Ranking
         </h2>
         <p className="text-sm mt-1" style={{ color: colors.grayscale.subtle }}>
           Browse and filter engineer applications by name or trade group

@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => {
         />
         <div className="max-w-7xl mx-auto px-8 py-8" style={{ position: 'relative', zIndex: 1 }}>
           <h1 style={{ color: 'white', fontFamily: 'Montserrat', fontWeight: 800, textShadow: '0 1px 4px rgba(0,0,0,0.5)' }} className="text-4xl">
-            Chumely Engineer Applications Dashboard
+            Chumley Engineer Applications Dashboard
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.85)', fontFamily: 'Montserrat', fontWeight: 400, textShadow: '0 1px 3px rgba(0,0,0,0.4)' }} className="mt-2 text-base">
             Real-time analytics & trade distribution insights
