@@ -40,16 +40,29 @@ async def lifespan(app: FastAPI):
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(title="CV Parser API", version="1.0.0", lifespan=lifespan)
 
+# ── CORS ──────────────────────────────────────────────────────────────────────
+# Get additional allowed origins from environment variable (comma-separated)
+extra_origins = os.getenv("ALLOWED_ORIGINS", "")
+extra_origins_list = [o.strip() for o in extra_origins.split(",") if o.strip()]
+
+allowed_origins = [
+    # Local development
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:5173",
+    "http://localhost:8080",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:8080",
+    # Production - Cloud Run
+    "https://cv-parser-service-726237234326.europe-west2.run.app",
+    *extra_origins_list,
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
